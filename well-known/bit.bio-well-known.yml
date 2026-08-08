@@ -1,0 +1,80 @@
+generated: '2026-08-07'
+method: probed
+source: live GET probes of every bit.bio-controlled host
+summary: >-
+  Every /.well-known/ path on the primary bit.bio hosts returns 404. The only 200s
+  found anywhere on a bit.bio-controlled host are on shop.bit.bio, and a control-path
+  diff proves they are Shopify platform defaults rather than anything bit.bio
+  authored or publishes. No pointer is wired into apis.yml for this artifact: a
+  WellKnown / APICatalog pointer would credit bit.bio with a discovery surface it
+  does not operate.
+hosts:
+- host: https://www.bit.bio
+  role: primary website (HubSpot CMS)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 404}
+- host: https://bit.bio
+  role: apex (301 to www)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://bitbiodiscovery.com
+  role: bit.bio discovery GmbH (Vienna subsidiary)
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://shop.bit.bio
+  role: e-commerce storefront (Shopify-hosted, CNAME shops.myshopify.com)
+  documents:
+  - {path: /.well-known/openid-configuration, status: 200, platform_generic: true}
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+platform_generic_findings:
+  note: >-
+    These endpoints exist because the storefront runs on Shopify, not because bit.bio
+    publishes an API. They carry no bit.bio-specific contract and are not recorded as
+    a bit.bio API surface.
+  endpoints:
+  - url: https://shop.bit.bio/.well-known/openid-configuration
+    status: 200
+    what: Shopify Customer Account OIDC discovery; issuer is
+      https://shopify.com/authentication/70135415076 — every endpoint in the document
+      is on shopify.com, none on bit.bio.
+  - url: https://shop.bit.bio/api/2024-10/graphql.json
+    status: 200
+    what: Shopify Storefront GraphQL API. Anonymous introspection of
+      '{__schema{queryType{name}}}' returns queryType QueryRoot. The schema is
+      Shopify's, identical across all Shopify storefronts; no SDL was saved because it
+      contains nothing bit.bio authored.
+  - url: https://shop.bit.bio/products.json
+    status: 200
+    what: Shopify's standard product JSON feed. It does carry real bit.bio catalog data
+      (product titles, handles, variants, vendor bit.bio) but it is a platform default,
+      not a documented, versioned, or supported bit.bio API.
+  control_path_diff:
+    method: >-
+      Probed the same two paths on an unrelated Shopify storefront to test whether the
+      200s are bit.bio-specific. They are not.
+    controls:
+    - {url: 'https://www.allbirds.com/.well-known/openid-configuration', status: 200}
+    - {url: 'https://www.allbirds.com/api/2024-10/graphql.json', status: 200, note: anonymous
+        introspection also succeeds}
+    - {url: 'https://www.gymshark.com/.well-known/openid-configuration', status: 404,
+      note: non-Shopify control, negative}
+    conclusion: >-
+      The 200s track the hosting platform, not the provider. A 200 is not evidence of a
+      provider-published API surface.
