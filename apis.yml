@@ -16,7 +16,7 @@ url: https://raw.githubusercontent.com/api-evangelist/bit.bio/refs/heads/main/ap
 image: https://14527135.fs1.hubspotusercontent-na1.net/hubfs/14527135/Logos/bit.bio/bitbio-logotype-no_tagline-color-positive-RGB.png
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-07'
 modified: '2026-08-07'
 tags:
