@@ -13,6 +13,17 @@ description: 'bit.bio is a Cambridge, UK synthetic biology company founded in 20
   cell vials through a web storefront and a distributor network; bit.bio publishes no
   developer program, public API, or machine-readable API contract.'
 url: https://raw.githubusercontent.com/api-evangelist/bit.bio/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://14527135.fs1.hubspotusercontent-na1.net/hubfs/14527135/Logos/bit.bio/bitbio-logotype-no_tagline-color-positive-RGB.png
 x-type: company
 x-source: harvest:secondary-market
